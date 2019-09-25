@@ -1,0 +1,17 @@
+import tensorflow as tf
+from tensorflow.contrib import rnn
+
+
+class AutoEncoder(object):
+    def __init__(self, word_dict, max_document_length):
+        self.embedding_size = 256
+        self.num_hidden = 512
+        self.vocabulary_size = len(word_dict)
+
+        self.x = tf.placeholder(tf.int32, [None, max_document_length])
+        self.batch_size = tf.shape(self.x)[0]
+
+        self.decoder_input = tf.concat([tf.ones([self.batch_size, 1], tf.int32) * word_dict["<s>"], self.x], axis=1)
+        self.decoder_output = tf.concat([self.x, tf.ones([self.batch_size, 1], tf.int32) * word_dict["</s>"]], axis=1)
+        self.encoder_input_len = tf.reduce_sum(tf.sign(self.x), 1)
+        self.decoder_input_len = tf.reduce_sum(tf.sign(self.decoder_input), 1)
