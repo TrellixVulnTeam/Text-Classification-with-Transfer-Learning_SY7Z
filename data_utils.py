@@ -13,4 +13,16 @@ TEST_PATH = "dbpedia_csv/test.csv"
 
 
 def download_dbpedia():
-    pass
+    dbpedia_url = 'https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz'
+
+    wget.download(dbpedia_url)
+    with tarfile.open("dbpedia_csv.tar.gz", "r:gz") as tar:
+        tar.extractall()
+
+
+def clean_str(text):
+    text = re.sub(r"[^A-Za-z0-9(),!?\'\`\"]", " ", text)
+    text = re.sub(r"\s{2,}", " ", text)
+    text = text.strip().lower()
+
+    return text
