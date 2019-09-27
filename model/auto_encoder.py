@@ -39,4 +39,7 @@ class AutoEncoder(object):
                                                    initial_state=encoder_states,
                                                    dtype=tf.float32)
 
+        with tf.name_scope("output"):
+            self.logits = tf.layers.dense(decoder_outputs, self.vocabulary_size)
+        
         
