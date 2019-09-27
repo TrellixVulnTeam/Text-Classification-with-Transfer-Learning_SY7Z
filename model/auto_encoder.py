@@ -15,3 +15,19 @@ class AutoEncoder(object):
         self.decoder_output = tf.concat([self.x, tf.ones([self.batch_size, 1], tf.int32) * word_dict["</s>"]], axis=1)
         self.encoder_input_len = tf.reduce_sum(tf.sign(self.x), 1)
         self.decoder_input_len = tf.reduce_sum(tf.sign(self.decoder_input), 1)
+
+        with tf.variable_scope("embedding"):
+            init_embeddings = tf.random.uniform([self.vocabulary_size, self.embedding_size])
+            embeddigs = tf.get_variable("embeddings", initializer=init_embeddings)
+            encoder_input_emb = tf.nn.embedding_lookup(embeddigs, self.x)
+            decoder_input_emb = tf.nn.embedding_lookup(embeddigs, self.decoder_input)
+        
+        with tf.variable_scope("rnn"):
+            encoder_cell = rnn.BasicLSTMCell(self.num_hidden)
+
+            _, encoder_states = tf.nn.dynamic_run(encoder_cell,
+                                                  encoder_input_emb,
+                                                  sequence_length=self.encoder_input_len,
+                                                  dtype=tf.float32)
+        
+        
