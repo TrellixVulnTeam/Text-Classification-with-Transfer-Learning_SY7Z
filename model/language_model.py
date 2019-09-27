@@ -1,8 +1,7 @@
 import tensorflow as tf
-from tensorflow.contrib import rnn
 
 
-class LanguageModel:
+class LanguageModel(object):
     def __init__(self, word_dict, max_document_length):
         self.embedding_size = 256
         self.num_hidden = 512
@@ -16,11 +15,23 @@ class LanguageModel:
         self.seq_len = tf.reduce_sum(tf.sign(self.lm_input), 1)
 
         with tf.variable_scope("embedding"):
-            init_embeddings = tf.random.uniform([self.vocabulary_size, self.embedding_size])
+            init_embeddings = tf.random_uniform([self.vocabulary_size, self.embedding_size])
             embeddings = tf.get_variable("embeddings", initializer=init_embeddings)
             lm_input_emb = tf.nn.embedding_lookup(embeddings, self.lm_input)
 
         with tf.variable_scope("rnn"):
             cell = tf.compat.v1.nn.rnn_cell.BasicLSTMCell(self.num_hidden)
-            rnn_outputs, _ = tf.nn.dynamic_rnn()
-            
+            rnn_outputs, _ = tf.nn.dynamic_rnn(
+                cell, lm_input_emb, sequence_length=self.seq_len, dtype=tf.float32)
+
+        with tf.name_scope("output"):
+            self.logits = tf.layers.dense(rnn_outputs, self.vocabulary_size)
+
+        with tf.name_scope("loss"):
+            losses = tf.contrib.seq2seq.sequence_loss(
+                logits=self.logits,
+                targets=self.lm_output,
+                weights=tf.sequence_mask(self.seq_len, max_document_length + 1, dtype=tf.float32),
+                average_across_timesteps=False,
+                average_across_batch=True)
+            self.loss = tf.reduce_mean(losses)
