@@ -42,4 +42,10 @@ class AutoEncoder(object):
         with tf.name_scope("output"):
             self.logits = tf.layers.dense(decoder_outputs, self.vocabulary_size)
         
-        
+        with tf.name_scope("loss"):
+            losses = tf.contrib.seq2seq.sequence_loss(logits=self.logits,
+                                                      targets=self.decoder_output,
+                                                      weights=tf.sequence_mask(self.decoder_input_len, max_document_length + 1, dtype=tf.float32),
+                                                      average_across_timesteps=False,
+                                                      average_across_batch=True)
+            self.loss = tf.reduce_mean(losses)
