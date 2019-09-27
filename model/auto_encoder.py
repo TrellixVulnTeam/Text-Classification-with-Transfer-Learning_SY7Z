@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.contrib import rnn
 
 
-class AutoEncoder(object):
+class AutoEncoder:
     def __init__(self, word_dict, max_document_length):
         self.embedding_size = 256
         self.num_hidden = 512
