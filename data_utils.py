@@ -34,7 +34,7 @@ def build_word_dict():
         contents = train_df["content"]
 
         words = list()
-        for content in contets:
+        for content in contents:
             for word in word_tokenize(clean_str(content)):
                 words.append(word)
 
@@ -56,3 +56,23 @@ def build_word_dict():
             pickle.load(f)
     
     return word_dict
+
+
+def build_word_dataset(step, word_dict, document_max_len):
+    if step == "train":
+        df = pd.read_csv(TRAIN_PATH, names=["class", "title", "content"])
+    else:
+        df = pd.read_csv(TEST_PATH, names=["class", "title", "content"])
+
+    # Shuffle dataframe
+    df = df.sample(frac=1)
+    x = list(map(lambda d: word_tokenize(clean_str(d)), df["content"]))
+    x = list(map(lambda d: list(map(lambda w: word_dict.get(w, word_dict["<unk>"]), d)), x))
+    x = list(map(lambda d: d[:document_max_len], x))
+    x = list(map(lambda d: d + (document_max_len - len(d)) * [word_dict["<pad>"]], x))
+
+    y = list(map(lambda d: d - 1, list(df["class"])))
+
+    return x, y
+
+  
