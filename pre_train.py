@@ -29,4 +29,6 @@ def train(train_x, train_y, word_dict, args):
     loss_summary = tf.summary.scalar("loss", model.loss)
     summary_op = tf.summary.merge_all()
     summary_writer = tf.summary.FileWriter(args.model, sess._graph)
+
+    sess.run(tf.global_variables_initializer())
     
