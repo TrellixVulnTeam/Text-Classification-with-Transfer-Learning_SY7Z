@@ -25,3 +25,8 @@ def train(train_x, train_y, word_dict, args):
     clipped_gradients, _ = tf.clip_by_global_norm(gradients, 5.0)
     optimizer = tf.train.AdamOptimizer(0.001)
     train_op = optimizer.apply_gradients(zip(clipped_gradients, params), global_step=global_step)
+
+    loss_summary = tf.summary.scalar("loss", model.loss)
+    summary_op = tf.summary.merge_all()
+    summary_writer = tf.summary.FileWriter(args.model, sess._graph)
+    
