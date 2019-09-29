@@ -30,5 +30,6 @@ def train(train_x, train_y, word_dict, args):
     summary_op = tf.summary.merge_all()
     summary_writer = tf.summary.FileWriter(args.model, sess._graph)
 
+    saver = tf.train.Saver(tf.global_variables())
+
     sess.run(tf.global_variables_initializer())
-    
