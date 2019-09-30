@@ -13,3 +13,9 @@ class WordRNN():
     self.y = tf.placeholder(tf.int32, [None])
     self.keep_prob = tf.placeholder(tf.float32, [])
 
+    with tf.variable_scope("embedding"):
+      init_embeddings = tf.random.uniform([vocabulary_size, self.embedding_size])
+      embeddings = tf.get_variable("embeddings", initializer=init_embeddings)
+      x_emb = tf.nn.embedding_lookup(embeddings, self.x)
+
+    
