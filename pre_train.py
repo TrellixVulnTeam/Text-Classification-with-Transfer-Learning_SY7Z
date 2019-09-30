@@ -54,3 +54,19 @@ def train(train_x, train_y, word_dict, args):
 
       if step % 5000 == 0:
                 saver.save(sess, os.path.join(args.model, "model", "model.ckpt"), global_step=step)
+
+
+if __name__ == "__main__":
+   parser = argparse.ArgumentParser()
+   parser.add_argument("--model", type=str, default="auto_encoder", help="auto_encoder | language_model")
+   args = parser.parse_args()
+
+   if not os.path.exists("dbpedia_csv"):
+       print("Downloading dbpedia dataset...")
+       download_dbpedia()
+
+   print("\nBuilding dictionary..")
+   word_dict = build_word_dict()
+   print("Preprocessing dataset..")
+   train_x, train_y = build_word_dataset("train", word_dict, MAX_DOCUMENT_LEN)
+   train(train_x, train_y, word_dict, args)
