@@ -33,3 +33,13 @@ def train(train_x, train_y, word_dict, args):
     saver = tf.train.Saver(tf.global_variables())
 
     sess.run(tf.global_variables_initializer())
+
+
+    def train_step(batch_x):
+      feed_dict = {model.x: batch_x}
+      _, step, summaries, loss = sess.run([train_op, global_step, summary_op, model.loss], feed_dict=feed_dict)
+
+      summary_writer.add_summary(summaries, step)
+
+      if step % 100 == 0:
+        print("step {0} : loss = {1}".format(step, loss))
