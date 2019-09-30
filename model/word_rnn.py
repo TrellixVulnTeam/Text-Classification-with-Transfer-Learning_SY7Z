@@ -24,3 +24,8 @@ class WordRNN():
                                      sequence_length=self.x_len,
                                      dtype=tf.float32)
       rnn_output_flat = tf.reshape(rnn_outputs, [-1, max_document_length * self.num_hiddens])
+
+    with tf.name_scope("fc"):
+      fc_output = tf.layers.dense(rnn_output_flat, self.fc_num_hidden, activation=tf.nn.relu)
+      dropout = tf.nn.dropout(fc_output, self.keep_prob)
+      
