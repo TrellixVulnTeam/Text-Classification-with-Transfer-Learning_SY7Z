@@ -3,6 +3,7 @@ import argparse
 import os 
 from model.auto_encoder import AutoEncoder
 from model.language_model import LanguageModel
+from data_utils import build_word_dict, build_word_dataset, batch_iter, download_dbpedia
 
 
 BATCH_SIZE = 64
@@ -43,3 +44,13 @@ def train(train_x, train_y, word_dict, args):
 
       if step % 100 == 0:
         print("step {0} : loss = {1}".format(step, loss))
+    
+
+    batches = batch_iter(train_x, train_y, BATCH_SIZE, NUM_EPOCHS)
+
+    for batch_x, _ in batches:
+      train_step(batch_x)
+      step = tf.train.global_step(sess, global_step)
+
+      if step % 5000 == 0:
+                saver.save(sess, os.path.join(args.model, "model", "model.ckpt"), global_step=step)
