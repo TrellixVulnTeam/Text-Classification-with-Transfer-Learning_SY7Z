@@ -38,3 +38,17 @@ def train(train_x, train_y, test_x, test_y, vocabulary_size, args):
             saver = tf.train.Saver(pre_trained_variables)
             ckpt = tf.train.get_checkpoint_state(os.path.join(args.pre_trained, "model"))
             saver.restore(sess, os.path.join(args.pre_trained, "model"))
+
+        
+        def train_step(batch_x, batch_y):
+          feed_dict = {
+            model.x: batch_x,
+            model.y: batch_y,
+            model.keep_prob: 0.5
+          }
+        
+        _, step, summaries, loss = sess.run([train_op, global_step, summary_op, model.loss], feed_dict=feed_dict)
+        summary_writer.add_summary(summaries, step)
+
+        if step % 100 == 0:
+                print("step {0} : loss = {1}".format(step, loss))
