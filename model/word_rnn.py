@@ -4,7 +4,7 @@ import tensorflow as tf
 class WordRNN():
   def __init__(self, vocabulary_size, max_document_length, num_class):
     self.embedding_size = 256
-    self.num_hiddens = 512
+    self.num_hidden = 512
     self.fc_num_hidden = 256
 
     self.x = tf.placeholder(tf.int32, [None, max_document_length])
@@ -23,9 +23,13 @@ class WordRNN():
                                      x_emb,
                                      sequence_length=self.x_len,
                                      dtype=tf.float32)
-      rnn_output_flat = tf.reshape(rnn_outputs, [-1, max_document_length * self.num_hiddens])
+      rnn_output_flat = tf.reshape(rnn_outputs, [-1, max_document_length * self.num_hidden])
 
     with tf.name_scope("fc"):
       fc_output = tf.layers.dense(rnn_output_flat, self.fc_num_hidden, activation=tf.nn.relu)
       dropout = tf.nn.dropout(fc_output, self.keep_prob)
+
+    with tf.name_scope("output"):
+      self.logits = tf.layers.dense(dropout, num_class)
+      self.predictions = tf.argmax(self.logits, -1, output_type=tf.int32)
       
