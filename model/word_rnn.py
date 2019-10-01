@@ -35,4 +35,7 @@ class WordRNN():
 
     with tf.name_scope("loss"):
       self.loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
-      
+
+    with tf.name_scope("accuracy"):
+      correct_predictions = tf.equal(self.predictions, self.y)
+      self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
