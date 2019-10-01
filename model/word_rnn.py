@@ -32,4 +32,7 @@ class WordRNN():
     with tf.name_scope("output"):
       self.logits = tf.layers.dense(dropout, num_class)
       self.predictions = tf.argmax(self.logits, -1, output_type=tf.int32)
+
+    with tf.name_scope("loss"):
+      self.loss = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y))
       
