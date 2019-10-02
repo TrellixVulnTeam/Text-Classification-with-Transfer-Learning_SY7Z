@@ -47,8 +47,24 @@ def train(train_x, train_y, test_x, test_y, vocabulary_size, args):
             model.keep_prob: 0.5
           }
         
+        
         _, step, summaries, loss = sess.run([train_op, global_step, summary_op, model.loss], feed_dict=feed_dict)
         summary_writer.add_summary(summaries, step)
 
         if step % 100 == 0:
                 print("step {0} : loss = {1}".format(step, loss))
+        
+
+        def test_accuracy(test_x, test_y):
+          test_batches = batch_iter(test_x, test_y, BATCH_SIZE, 1)
+          sum_accuracy, cnt = 0, 0 
+
+          for test_batch_x, test_batch_y in test_batches:
+            accuracy = sess.run(model.accuracy, feed_dict={model.x = test_batch_x, model.y = test_batch_y, model.keep_prob: 1.0})
+            sum_accuracy += accuracy
+            cnt += 1
+        
+          with open(args.summary_dir + "-accuracy.txt", "a") as f:
+            print(sum_accuracy/cnt, file=f)
+
+          return sum_accuracy / cnt
