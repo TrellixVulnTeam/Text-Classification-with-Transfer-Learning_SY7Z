@@ -68,3 +68,32 @@ def train(train_x, train_y, test_x, test_y, vocabulary_size, args):
             print(sum_accuracy/cnt, file=f)
 
           return sum_accuracy / cnt
+
+
+        batches = batch_iter(train_x, train_y, BATCH_SIZE, NUM_EPOCHS)
+
+        for batch_x, batch_y in batches:
+          train_step(batch_x, batch_y)
+          step = tf.train.global_step(sess, global_step)
+
+          if step % 200 == 0:
+            test_acc = test_accuracy(test_x, test_y)
+            print("test_accuracy = {0}\n".format(test_acc))
+          
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--pre_trained", type=str, default="none", help="none | auto_encoder | language_model")
+  parser.add_argument("--summary_dir", type=str, default="classifier", help="summary dir.")
+  args = parser.parse_args()
+
+  if not os.path.exists("dbpedia_csv"):
+    print("Downloading dbpedia dataset...")
+    download_dbpedia()
+  
+  print("\nBuilding dictionary..")
+  word_dict = build_word_dict()
+  print("Preprocessing dataset..")
+  train_x, train_y = build_word_dataset("train", word_dict, MAX_DOCUMENT_LEN)
+  test_x, test_y = build_word_dataset("test", word_dict, MAX_DOCUMENT_LEN)
+  train(train_x, train_y, test_x, test_y, len(word_dict), args)
