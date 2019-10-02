@@ -60,7 +60,7 @@ def train(train_x, train_y, test_x, test_y, vocabulary_size, args):
           sum_accuracy, cnt = 0, 0 
 
           for test_batch_x, test_batch_y in test_batches:
-            accuracy = sess.run(model.accuracy, feed_dict={model.x = test_batch_x, model.y = test_batch_y, model.keep_prob: 1.0})
+            accuracy = sess.run(model.accuracy, feed_dict={model.x: test_batch_x, model.y: test_batch_y, model.keep_prob: 1.0})
             sum_accuracy += accuracy
             cnt += 1
         
